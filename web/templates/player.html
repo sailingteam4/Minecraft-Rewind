@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}{{ player.name }} - Minecraft Rewind{% endblock %}
+
+{% block content %}
+<!-- Player Header -->
+<section class="dirt-bg py-12 border-b-4 border-mc-gray">
+    <div class="max-w-4xl mx-auto px-4 flex items-center gap-8">
+        <div class="avatar-frame p-1">
+            <img src="/avatar/{{ player.name }}/128" alt="{{ player.name }}" class="w-32 h-32">
+        </div>
+        <div>
+            <h1 class="font-minecraft text-4xl mc-gold-text">{{ player.name }}</h1>
+            <p class="text-mc-light mt-2">📅 Dernière mise à jour: {{ player.extraction_date }}</p>
+            <p class="text-gray-500 text-sm font-mono mt-1">{{ player.uuid }}</p>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Grid -->
+<section class="max-w-4xl mx-auto px-4 py-12">
+    <h2 class="font-minecraft text-2xl mc-shadow mb-6">📊 STATISTIQUES</h2>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="mc-card p-4 text-center">
+            <div class="text-2xl mb-2">⏱️</div>
+            <div class="font-minecraft text-2xl text-mc-green counter"
+                data-target="{{ player.stats.playtime_hours|default(0) }}" data-decimals="1">0</div>
+            <div class="text-mc-light text-sm">Heures</div>
+            {% if ranks.playtime_hours %}<div class="text-xs text-mc-gold mt-1">#{{ ranks.playtime_hours }}</div>{%
+            endif %}
+        </div>
+
+        <div class="mc-card p-4 text-center">
+            <div class="text-2xl mb-2">🏃</div>
+            <div class="font-minecraft text-2xl text-mc-blue counter"
+                data-target="{{ player.stats.distance_km|default(0) }}" data-decimals="1">0</div>
+            <div class="text-mc-light text-sm">Kilomètres</div>
+            {% if ranks.distance_km %}<div class="text-xs text-mc-gold mt-1">#{{ ranks.distance_km }}</div>{% endif %}
+        </div>
+
+        <div class="mc-card p-4 text-center">
+            <div class="text-2xl mb-2">⛏️</div>
+            <div class="font-minecraft text-2xl text-mc-gold counter"
+                data-target="{{ player.stats.blocks_mined|default(0)|int }}">0</div>
+            <div class="text-mc-light text-sm">Blocs minés</div>
+            {% if ranks.blocks_mined %}<div class="text-xs text-mc-gold mt-1">#{{ ranks.blocks_mined }}</div>{% endif %}
+        </div>
+
+        <div class="mc-card p-4 text-center">
+            <div class="text-2xl mb-2">🔨</div>
+            <div class="font-minecraft text-2xl text-mc-light counter"
+                data-target="{{ player.stats.blocks_crafted|default(0)|int }}">0</div>
+            <div class="text-mc-light text-sm">Craftés</div>
+        </div>
+
+        <div class="mc-card p-4 text-center">
+            <div class="text-2xl mb-2">⚔️</div>
+            <div class="font-minecraft text-2xl text-mc-red counter"
+                data-target="{{ player.stats.mob_kills|default(0)|int }}">0</div>
+            <div class="text-mc-light text-sm">Mobs tués</div>
+            {% if ranks.mob_kills %}<div class="text-xs text-mc-gold mt-1">#{{ ranks.mob_kills }}</div>{% endif %}
+        </div>
+
+        <div class="mc-card p-4 text-center">
+            <div class="text-2xl mb-2">💀</div>
+            <div class="font-minecraft text-2xl text-gray-400 counter"
+                data-target="{{ player.stats.deaths|default(0)|int }}">0</div>
+            <div class="text-mc-light text-sm">Morts</div>
+        </div>
+
+        <div class="mc-card p-4 text-center">
+            <div class="text-2xl mb-2">🔧</div>
+            <div class="font-minecraft text-2xl text-mc-light counter"
+                data-target="{{ player.stats.tools_broken|default(0)|int }}">0</div>
+            <div class="text-mc-light text-sm">Outils cassés</div>
+        </div>
+
+        <div class="mc-card p-4 text-center">
+            <div class="text-2xl mb-2">📈</div>
+            {% set deaths = player.stats.deaths|default(1)|int %}
+            {% set kills = player.stats.mob_kills|default(0)|int %}
+            {% set ratio = (kills / deaths) if deaths > 0 else kills %}
+            <div class="font-minecraft text-2xl text-mc-green">{{ "%.1f"|format(ratio) }}</div>
+            <div class="text-mc-light text-sm">K/D Ratio</div>
+        </div>
+    </div>
+</section>
+
+<!-- Records -->
+<section class="max-w-4xl mx-auto px-4 py-8">
+    <h2 class="font-minecraft text-2xl mc-shadow mb-6">🏆 RECORDS</h2>
+
+    <div class="grid md:grid-cols-2 gap-4">
+        {% if player.top_items.mined and player.top_items.mined.name %}
+        <div class="mc-card p-4 flex items-center gap-4">
+            <div class="mc-slot w-12 h-12 flex items-center justify-center text-2xl">⛏️</div>
+            <div>
+                <div class="text-sm text-mc-light">Bloc le plus miné</div>
+                <div class="font-minecraft text-mc-gold">{{ player.top_items.mined.name }}</div>
+                <div class="text-sm text-gray-400">{{ player.top_items.mined.count }}x</div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if player.top_items.killed and player.top_items.killed.name %}
+        <div class="mc-card p-4 flex items-center gap-4">
+            <div class="mc-slot w-12 h-12 flex items-center justify-center text-2xl">⚔️</div>
+            <div>
+                <div class="text-sm text-mc-light">Mob le plus tué</div>
+                <div class="font-minecraft text-mc-red">{{ player.top_items.killed.name }}</div>
+                <div class="text-sm text-gray-400">{{ player.top_items.killed.count }}x</div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if player.top_items.crafted and player.top_items.crafted.name %}
+        <div class="mc-card p-4 flex items-center gap-4">
+            <div class="mc-slot w-12 h-12 flex items-center justify-center text-2xl">🔨</div>
+            <div>
+                <div class="text-sm text-mc-light">Item le plus crafté</div>
+                <div class="font-minecraft text-mc-green">{{ player.top_items.crafted.name }}</div>
+                <div class="text-sm text-gray-400">{{ player.top_items.crafted.count }}x</div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if player.top_items.broken and player.top_items.broken.name %}
+        <div class="mc-card p-4 flex items-center gap-4">
+            <div class="mc-slot w-12 h-12 flex items-center justify-center text-2xl">🔧</div>
+            <div>
+                <div class="text-sm text-mc-light">Outil le plus usé</div>
+                <div class="font-minecraft text-mc-light">{{ player.top_items.broken.name }}</div>
+                <div class="text-sm text-gray-400">{{ player.top_items.broken.count }}x</div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- History -->
+{% if history|length > 1 %}
+<section class="max-w-4xl mx-auto px-4 py-8">
+    <h2 class="font-minecraft text-2xl mc-shadow mb-6">📅 HISTORIQUE</h2>
+
+    <div class="mc-card overflow-hidden">
+        <table class="w-full">
+            <thead class="bg-mc-gray">
+                <tr>
+                    <th class="px-4 py-2 text-left font-minecraft">Date</th>
+                    <th class="px-4 py-2 text-right font-minecraft">⏱️</th>
+                    <th class="px-4 py-2 text-right font-minecraft">⛏️</th>
+                    <th class="px-4 py-2 text-right font-minecraft">⚔️</th>
+                    <th class="px-4 py-2 text-right font-minecraft">💀</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in history %}
+                <tr class="border-t border-mc-gray hover:bg-mc-gray/50">
+                    <td class="px-4 py-2 font-mono text-sm">{{ entry.date }}</td>
+                    <td class="px-4 py-2 text-right text-mc-green">{{
+                        "%.1f"|format(entry.stats.playtime_hours|default(0)) }}h</td>
+                    <td class="px-4 py-2 text-right text-mc-gold">{{ entry.stats.blocks_mined|default(0)|int }}</td>
+                    <td class="px-4 py-2 text-right text-mc-red">{{ entry.stats.mob_kills|default(0)|int }}</td>
+                    <td class="px-4 py-2 text-right text-gray-400">{{ entry.stats.deaths|default(0)|int }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endif %}
+
+<!-- Other Players -->
+<section class="max-w-4xl mx-auto px-4 py-8">
+    <div class="flex flex-wrap justify-center gap-3">
+        {% for p in players if p.name != player.name %}
+        <a href="/player/{{ p.name }}"
+            class="mc-card px-3 py-2 flex items-center gap-2 hover:bg-mc-gray transition-colors">
+            <img src="/avatar/{{ p.name }}/20" alt="{{ p.name }}" class="w-5 h-5">
+            <span class="text-sm">{{ p.name }}</span>
+        </a>
+        {% endfor %}
+    </div>
+
+    <div class="text-center mt-8">
+        <a href="/" class="mc-btn px-6 py-2 font-minecraft inline-block">
+            ← Retour aux classements
+        </a>
+    </div>
+</section>
+{% endblock %}

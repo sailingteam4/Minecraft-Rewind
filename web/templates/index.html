@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}Minecraft Rewind{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="dirt-bg py-16 text-center border-b-4 border-mc-gray">
+    <h1 class="font-minecraft text-5xl mc-gold-text mb-4">⛏️ MINECRAFT REWIND</h1>
+    <p class="text-mc-light text-lg">Statistiques hebdomadaires du serveur</p>
+
+    <!-- Global Stats -->
+    <div class="flex justify-center gap-8 mt-8">
+        <div class="mc-card p-4 text-center">
+            <div class="font-minecraft text-3xl text-mc-green counter" data-target="{{ global_stats.total_players }}">0
+            </div>
+            <div class="text-mc-light text-sm">Joueurs</div>
+        </div>
+        <div class="mc-card p-4 text-center">
+            <div class="font-minecraft text-3xl text-mc-gold counter"
+                data-target="{{ global_stats.totals.blocks_mined|default(0)|int }}">0</div>
+            <div class="text-mc-light text-sm">Blocs minés</div>
+        </div>
+        <div class="mc-card p-4 text-center">
+            <div class="font-minecraft text-3xl text-mc-red counter"
+                data-target="{{ global_stats.totals.mob_kills|default(0)|int }}">0</div>
+            <div class="text-mc-light text-sm">Mobs tués</div>
+        </div>
+    </div>
+</section>
+
+<!-- Leaderboards -->
+<section class="max-w-6xl mx-auto px-4 py-12">
+    <h2 class="font-minecraft text-3xl text-center mc-shadow mb-8">🏆 CLASSEMENTS</h2>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Blocks Mined -->
+        <div class="mc-card">
+            <div class="bg-mc-gray px-4 py-2 border-b-2 border-mc-dark">
+                <h3 class="font-minecraft text-xl">⛏️ Blocs Minés</h3>
+            </div>
+            <div class="p-4 space-y-2">
+                {% for player in leaderboards.blocks_mined %}
+                <a href="/player/{{ player.name }}"
+                    class="flex items-center gap-3 p-2 hover:bg-mc-gray transition-colors">
+                    <span
+                        class="font-minecraft text-lg w-6 {% if player.rank == 1 %}rank-gold{% elif player.rank == 2 %}rank-silver{% elif player.rank == 3 %}rank-bronze{% else %}text-mc-light{% endif %}">
+                        #{{ player.rank }}
+                    </span>
+                    <div class="avatar-frame">
+                        <img src="/avatar/{{ player.name }}/32" alt="{{ player.name }}" class="w-8 h-8">
+                    </div>
+                    <span class="flex-1 font-medium">{{ player.name }}</span>
+                    <span class="font-minecraft text-mc-gold">{{ player.value|int }}</span>
+                </a>
+                {% else %}
+                <p class="text-gray-500 text-center py-4">Aucune donnée</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Playtime -->
+        <div class="mc-card">
+            <div class="bg-mc-gray px-4 py-2 border-b-2 border-mc-dark">
+                <h3 class="font-minecraft text-xl">⏱️ Temps de Jeu</h3>
+            </div>
+            <div class="p-4 space-y-2">
+                {% for player in leaderboards.playtime_hours %}
+                <a href="/player/{{ player.name }}"
+                    class="flex items-center gap-3 p-2 hover:bg-mc-gray transition-colors">
+                    <span
+                        class="font-minecraft text-lg w-6 {% if player.rank == 1 %}rank-gold{% elif player.rank == 2 %}rank-silver{% elif player.rank == 3 %}rank-bronze{% else %}text-mc-light{% endif %}">
+                        #{{ player.rank }}
+                    </span>
+                    <div class="avatar-frame">
+                        <img src="/avatar/{{ player.name }}/32" alt="{{ player.name }}" class="w-8 h-8">
+                    </div>
+                    <span class="flex-1 font-medium">{{ player.name }}</span>
+                    <span class="font-minecraft text-mc-green">{{ "%.1f"|format(player.value) }}h</span>
+                </a>
+                {% else %}
+                <p class="text-gray-500 text-center py-4">Aucune donnée</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Mob Kills -->
+        <div class="mc-card">
+            <div class="bg-mc-gray px-4 py-2 border-b-2 border-mc-dark">
+                <h3 class="font-minecraft text-xl">⚔️ Mobs Tués</h3>
+            </div>
+            <div class="p-4 space-y-2">
+                {% for player in leaderboards.mob_kills %}
+                <a href="/player/{{ player.name }}"
+                    class="flex items-center gap-3 p-2 hover:bg-mc-gray transition-colors">
+                    <span
+                        class="font-minecraft text-lg w-6 {% if player.rank == 1 %}rank-gold{% elif player.rank == 2 %}rank-silver{% elif player.rank == 3 %}rank-bronze{% else %}text-mc-light{% endif %}">
+                        #{{ player.rank }}
+                    </span>
+                    <div class="avatar-frame">
+                        <img src="/avatar/{{ player.name }}/32" alt="{{ player.name }}" class="w-8 h-8">
+                    </div>
+                    <span class="flex-1 font-medium">{{ player.name }}</span>
+                    <span class="font-minecraft text-mc-red">{{ player.value|int }}</span>
+                </a>
+                {% else %}
+                <p class="text-gray-500 text-center py-4">Aucune donnée</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Deaths -->
+        <div class="mc-card">
+            <div class="bg-mc-gray px-4 py-2 border-b-2 border-mc-dark">
+                <h3 class="font-minecraft text-xl">💀 Morts</h3>
+            </div>
+            <div class="p-4 space-y-2">
+                {% for player in leaderboards.deaths %}
+                <a href="/player/{{ player.name }}"
+                    class="flex items-center gap-3 p-2 hover:bg-mc-gray transition-colors">
+                    <span
+                        class="font-minecraft text-lg w-6 {% if player.rank == 1 %}rank-gold{% elif player.rank == 2 %}rank-silver{% elif player.rank == 3 %}rank-bronze{% else %}text-mc-light{% endif %}">
+                        #{{ player.rank }}
+                    </span>
+                    <div class="avatar-frame">
+                        <img src="/avatar/{{ player.name }}/32" alt="{{ player.name }}" class="w-8 h-8">
+                    </div>
+                    <span class="flex-1 font-medium">{{ player.name }}</span>
+                    <span class="font-minecraft text-gray-400">{{ player.value|int }}</span>
+                </a>
+                {% else %}
+                <p class="text-gray-500 text-center py-4">Aucune donnée</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Distance -->
+        <div class="mc-card">
+            <div class="bg-mc-gray px-4 py-2 border-b-2 border-mc-dark">
+                <h3 class="font-minecraft text-xl">🏃 Distance</h3>
+            </div>
+            <div class="p-4 space-y-2">
+                {% for player in leaderboards.distance_km %}
+                <a href="/player/{{ player.name }}"
+                    class="flex items-center gap-3 p-2 hover:bg-mc-gray transition-colors">
+                    <span
+                        class="font-minecraft text-lg w-6 {% if player.rank == 1 %}rank-gold{% elif player.rank == 2 %}rank-silver{% elif player.rank == 3 %}rank-bronze{% else %}text-mc-light{% endif %}">
+                        #{{ player.rank }}
+                    </span>
+                    <div class="avatar-frame">
+                        <img src="/avatar/{{ player.name }}/32" alt="{{ player.name }}" class="w-8 h-8">
+                    </div>
+                    <span class="flex-1 font-medium">{{ player.name }}</span>
+                    <span class="font-minecraft text-mc-blue">{{ "%.1f"|format(player.value) }}km</span>
+                </a>
+                {% else %}
+                <p class="text-gray-500 text-center py-4">Aucune donnée</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Tools Broken -->
+        <div class="mc-card">
+            <div class="bg-mc-gray px-4 py-2 border-b-2 border-mc-dark">
+                <h3 class="font-minecraft text-xl">🔧 Outils Cassés</h3>
+            </div>
+            <div class="p-4 space-y-2">
+                {% for player in leaderboards.tools_broken %}
+                <a href="/player/{{ player.name }}"
+                    class="flex items-center gap-3 p-2 hover:bg-mc-gray transition-colors">
+                    <span
+                        class="font-minecraft text-lg w-6 {% if player.rank == 1 %}rank-gold{% elif player.rank == 2 %}rank-silver{% elif player.rank == 3 %}rank-bronze{% else %}text-mc-light{% endif %}">
+                        #{{ player.rank }}
+                    </span>
+                    <div class="avatar-frame">
+                        <img src="/avatar/{{ player.name }}/32" alt="{{ player.name }}" class="w-8 h-8">
+                    </div>
+                    <span class="flex-1 font-medium">{{ player.name }}</span>
+                    <span class="font-minecraft text-mc-light">{{ player.value|int }}</span>
+                </a>
+                {% else %}
+                <p class="text-gray-500 text-center py-4">Aucune donnée</p>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- All Players -->
+<section class="max-w-6xl mx-auto px-4 py-12">
+    <h2 class="font-minecraft text-2xl text-center mc-shadow mb-6">👥 JOUEURS</h2>
+
+    <div class="flex flex-wrap justify-center gap-4">
+        {% for player in players %}
+        <a href="/player/{{ player.name }}"
+            class="mc-card p-3 flex items-center gap-2 hover:bg-mc-gray transition-colors">
+            <div class="avatar-frame">
+                <img src="/avatar/{{ player.name }}/24" alt="{{ player.name }}" class="w-6 h-6">
+            </div>
+            <span class="font-medium">{{ player.name }}</span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
