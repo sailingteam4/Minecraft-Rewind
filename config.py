@@ -28,6 +28,10 @@ DB_PATH = DATA_DIR / "rewind.db"
 # Logging
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 
+# Discord Bot Configuration
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN", "")
+DISCORD_GUILD_ID = os.getenv("DISCORD_GUILD_ID", "")  # Optional: for faster command sync
+
 # Ensure data directory exists
 DATA_DIR.mkdir(exist_ok=True)
 
